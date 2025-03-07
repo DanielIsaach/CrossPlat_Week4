@@ -1,20 +1,52 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { ScrollView, View } from "react-native";
+import { Avatar, Card, Paragraph, Title } from "react-native-paper"; // Mengimpor komponen React Native Paper
+import { SafeAreaView } from "react-native-safe-area-context";
+import styles from "./App.styles.js";
+import userData from "./data.json"; // Mengimpor data pengguna
+
+// Fungsi untuk mengambil gambar lokal berdasarkan nama file
+const localImage = (imageName) => {
+  const imageMap = {
+    "Crab.png": require("./assets/Image/Crab.png"),
+    "Pat.png": require("./assets/Image/Pat.png"),
+    "Plank.png": require("./assets/Image/Plank.png"),
+    "Sandy.png": require("./assets/Image/Sandy.png"),
+    "sponge.png": require("./assets/Image/sponge.png"),
+    "Squid.png": require("./assets/Image/Squid.png"),
+  };
+
+  return imageMap[imageName] || require("./assets/Image/Default.jpg"); // Gambar default jika tidak ditemukan
+};
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        {userData.map((users) => {
+          const isUrl = users.photo_url.startsWith("http");
+
+          return (
+            <Card style={styles.card} key={users.name}>
+              <Card.Content style={styles.cardContent}>
+                <Avatar.Image
+                  size={80}
+                  source={
+                    isUrl
+                      ? { uri: users.photo_url }
+                      : localImage(users.photo_url)
+                  }
+                  style={styles.avatar}
+                />
+                <View style={styles.textContainer}>
+                  <Title style={styles.title}>{users.name}</Title>
+                  <Paragraph style={styles.paragraph}>{users.email}</Paragraph>
+                </View>
+              </Card.Content>
+            </Card>
+          );
+        })}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
